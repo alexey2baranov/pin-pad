@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="dev">
+    <serverData>
+      <paths name="217.114.191.210">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/usr/local/apache2/htdocs/hd/public/pin-pad" local="$PROJECT_DIR$/dist" web="/hd/public/pin-pad" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dev">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/usr/local/apache2/htdocs/hd_dev/public/pin-pad" local="$PROJECT_DIR$/dist" web="/hd/public/pin-pad" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="disk W:">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/mnt/hgfs/pin-pad/" local="$PROJECT_DIR$" web="/pin-pad" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

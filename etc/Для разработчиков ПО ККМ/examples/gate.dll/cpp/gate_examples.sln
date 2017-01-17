@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hash", "hash\hash.vcproj", "{D53CA907-C66F-438E-8AB0-EB7FD3BB47E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasibo", "spasibo\spasibo.vcproj", "{C1178E2B-0A5D-4F09-8779-F2503AEBC740}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D53CA907-C66F-438E-8AB0-EB7FD3BB47E7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D53CA907-C66F-438E-8AB0-EB7FD3BB47E7}.Debug|Win32.Build.0 = Debug|Win32
+		{D53CA907-C66F-438E-8AB0-EB7FD3BB47E7}.Release|Win32.ActiveCfg = Release|Win32
+		{D53CA907-C66F-438E-8AB0-EB7FD3BB47E7}.Release|Win32.Build.0 = Release|Win32
+		{C1178E2B-0A5D-4F09-8779-F2503AEBC740}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1178E2B-0A5D-4F09-8779-F2503AEBC740}.Debug|Win32.Build.0 = Debug|Win32
+		{C1178E2B-0A5D-4F09-8779-F2503AEBC740}.Release|Win32.ActiveCfg = Release|Win32
+		{C1178E2B-0A5D-4F09-8779-F2503AEBC740}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,7 @@
+g - Vx820
+G - Vx810
+K - iPP320
+k - Vx805
+a - iPP350
+b - iSC250
+d - iPP480

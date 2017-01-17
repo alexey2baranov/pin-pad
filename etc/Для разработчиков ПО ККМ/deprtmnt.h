@@ -1,0 +1,7 @@
+#ifndef INCLUDE_TYPES_DEPARTMENT_H
+#define INCLUDE_TYPES_DEPARTMENT_H
+
+#define DEPARTMENT_NOT_SPECIFIED 0xFFFFFFFFUL
+
+#define GetSpecifiedDepartment(a) ((a == DEPARTMENT_NOT_SPECIFIED) ? 0 : a)
+#endif
