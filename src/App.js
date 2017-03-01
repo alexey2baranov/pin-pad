@@ -10,12 +10,13 @@ export default class App {
         this.subscriber = null
         this.sum = null
         this.account = null
+        this.cheq = null
 
         /**
          * онлайн статус сервера сбербанка
          * и обновление статуса
          */
-        this.sberbankServerStatus=true
+        this.sberbankServerStatus = true
         if (!navigator.userAgent.match(/linux/i)) {
             setInterval(() => {
                 let url = new URL("http://localhost:3000/ping");
@@ -65,23 +66,27 @@ export default class App {
     }
 
     payToSberbank() {
-        let url = new URL("http://localhost:3000/pay");
-        url.searchParams.append("sum", this.sum);
+        let url = new URL("http://localhost:3000/");
+        url.searchParams.append("operation", 1)
+        url.searchParams.append("sum", this.sum)
         return fetch(url)
             .then(response => response.json())
             .then(result => {
                 console.log("sberbank call result", result)
                 if (result.status != "success") {
-                    throw new Error(result.stack)
+                    throw new Error(result.error.message);
+                }
+                else{
+                    this.cheq= result.cheq
                 }
             })
             .catch(function (err) {
-                throw new Error(`sberbank call Error ${url.href}: ${err}`)
-            });
+                throw new Error(`sberbank Error ${url.href}: ${err}`)
+            })
     }
 
     payToBilling() {
-        let url = new URL("http://217.114.191.210/weboplata/public/1.0.php");
+        let url = new URL(config.weboplata.url);
         url.searchParams.append("method", "add");
         url.searchParams.append("AccountNumber", this.account.number);
         url.searchParams.append("ServiceType", 1);

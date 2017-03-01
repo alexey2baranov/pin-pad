@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="dev">
+  <component name="PublishConfigData" autoUpload="Always" serverName="dev">
     <serverData>
       <paths name="217.114.191.210">
         <serverdata>
@@ -12,8 +12,12 @@
       <paths name="dev">
         <serverdata>
           <mappings>
-            <mapping deploy="/usr/local/apache2/htdocs/hd_dev/public/pin-pad" local="$PROJECT_DIR$/dist" web="/hd/public/pin-pad" />
+            <mapping deploy="/usr/local/apache2/htdocs/pin-pad" local="$PROJECT_DIR$/" web="/hd/public/pin-pad" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/node_modules" />
+            <excludedPath local="true" path="$PROJECT_DIR$/dist" />
+          </excludedPaths>
         </serverdata>
       </paths>
       <paths name="disk W:">
@@ -24,5 +28,6 @@
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

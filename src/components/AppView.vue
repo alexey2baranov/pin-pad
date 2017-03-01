@@ -9,26 +9,40 @@
                         </pre>
             -->
         </div>
+
         <form @submit.prevent="1">
-            <input type="text" id="search" placeholder="Номер договора или ФИО (Esc)">
-            <mu-auto-complete id="search2" labelFloat label="Номер договора или ФИО (Esc)" fullWidth
-                              :dataSource="autocomplete_dataSource" filter="noFilter"/>
+            <mu-tabs :value="operation" @change="operation_change">
+                <mu-tab value="pay" title="Oplta"/>
+                <mu-tab value="tab2" title="TAB TWO"/>
+                <mu-tab value="tab3" title="TAB ACTIVE"/>
+            </mu-tabs>
+            <div v-show="operation === 'pay'">
+                <mu-auto-complete id="search2" labelFloat label="Номер договора или ФИО (Esc)" fullWidth
+                                  :dataSource="autocomplete_dataSource" filter="noFilter" @select="autocomplete_select"/>
 
+                <subscriber-view v-if="model.subscriber" v-bind:model="model.subscriber"
+                                 @accountNumberChange="subscriberView_accountNumberChange"></subscriber-view>
 
-            <subscriber-view v-if="model.subscriber" v-bind:model="model.subscriber"
-                             @accountNumberChange="subscriberView_accountNumberChange"></subscriber-view>
+                <template v-if="model.subscriber">
+                    <input type="number" id="sum" min="0" placeholder="Сумма оплаты" v-model.number="model.sum">
+                    <input type="submit" id="pay" :disabled="!(model.account && model.sum && model.sberbankServerStatus)"
+                           value="Оплатить (Enter)"
+                           @click="model.pay.bind(model)()">
+                    <div id="sberbankServerStatusMessage" v-if="!model.sberbankServerStatus">Платежный сервис ПАО "Сбербанк"
+                        недоступен
+                    </div>
+                </template>
+                <mu-paper v-if="model.cheq" class="cheq" :zDepth="2" >{{model.cheq}}</mu-paper>
+            </div>
+            <div v-if="operation === 'tab2'">
+                <h2>Tab Two</h2>
+            </div>
+            <div v-if="operation === 'tab3'">
+                <h2>Tab Three</h2>
+            </div>
 
-
-            <template v-if="model.subscriber">
-                <input type="number" id="sum" min="0" placeholder="Сумма оплаты" v-model.number="model.sum">
-                <input type="submit" id="pay" :disabled="!(model.account && model.sum && model.sberbankServerStatus)"
-                       value="Оплатить (Enter)"
-                       @click="model.pay.bind(model)()">
-                <div id="sberbankServerStatusMessage" v-if="!model.sberbankServerStatus">Платежный сервис ПАО "Сбербанк"
-                    не доступен
-                </div>
-            </template>
             <pre>
+                operation {{operation}}
                     <!--{{ model.account}}-->
                 <!--{{model.subscriber}}-->
                     </pre>
@@ -45,14 +59,17 @@
 
     import SubscriberView from './SubscriberView'
 
-    let config = require('../../config/main')[process.env.NODE_ENV];
-    console.log("config", config);
+    let config = require('../../config/main')[process.env.NODE_ENV]
+    console.log("NODE_ENV", process.env.NODE_ENV, "config", config)
 
 
     export default {
+
         name: 'app-view',
         data: function () {
             return {
+                activeTab: 'tab1',
+                operation: "pay",
                 unhandledRejection: null,
                 autocomplete_dataSource: [{text: "javascript", value: 1}]
             }
@@ -63,12 +80,16 @@
         },
         computed: {},
         methods: {
-            /*            autocomplete_input(search){
-             console.log(search)
-             this.$data.autocomplete_dataSource = []
-             this.debouncedSetAutocompleteDatasource(search)
-             },*/
-
+            handleTabChange(x){
+                this.activeTab= x
+                alert("change"+x)
+            },
+            handleActive(y){
+                alert("active")
+            },
+            async operation_change(cur){
+                this.operation= cur
+            },
             /**
              * Ищет клиентов удовлетворяющих поиску
              * Преобразовывает массив объектов получаемый по http в правильный массив у которого
@@ -76,16 +97,17 @@
              *
              * @return <[{text, value}]> Promise
              */
-            getSubscribers(term){
-                let url = new URL(`http://217.114.191.210/hd/public/Billing_SearcherView_Callback.php`)
+            autocomplete_getDataSource(term){
+                let url = new URL(`${config.server.schema}://${config.server.host}:${config.server.port}/${config.server.subscribersPath}`)
                 url.searchParams.append("term", term)
+//                console.log(url.href)
                 return fetch(url)
                     .then(response => response.json())
                     .then(result => {
                         let fixedResult = result.map((eachResult) => {
                             return {
                                 text: eachResult.label,
-                                value: eachResult.value,
+                                value: +eachResult.value,
                             }
                         })
                         console.log("search result", fixedResult)
@@ -102,11 +124,10 @@
              * @param event
              * @param ui
              */
-            autocomplete_select(event, ui) {
-                this.model.getSubscriber(ui.item.id)
+            autocomplete_select(item, index) {
+                this.model.getSubscriber(item.value)
                     .then(subscriber => {
                         this.model.subscriber = subscriber;
-//                        return fetch("http://217.114.191.210/sadfsadfsadf")
                     })
                     .catch(err => {
                         throw new Error(`Autocomplete select Error: ${err}`)
@@ -130,12 +151,10 @@
                     this.$data.autocomplete_dataSource = []
                 })
                 .debounceTime(300)
-
-                .subscribe(event => {
-                    this.getSubscribers(event.target.value)
-                        .then(subscribers => {
-                            this.$data.autocomplete_dataSource = subscribers
-                        })
+                .distinctUntilChanged()
+                .switchMap(event => event.target.value ? Rx.Observable.fromPromise(this.autocomplete_getDataSource(event.target.value)) : Rx.Observable.of([]))
+                .subscribe(datasource => {
+                    this.$data.autocomplete_dataSource = datasource
                 })
         }
     }
