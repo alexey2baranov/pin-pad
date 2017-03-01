@@ -65,6 +65,91 @@ export default class App {
             })
     }
 
+    /**
+     * отменить посдеднюю
+     */
+    cancel() {
+        let url = new URL("http://localhost:3000/");
+        url.searchParams.append("operation", 2)
+        return fetch(url)
+            .then(response => response.json())
+            .then(result => {
+                console.log("sberbank call result", result)
+                if (result.status != "success") {
+                    throw new Error(result.error.message);
+                }
+                else {
+                    this.cheq = result.cheq;
+                }
+            })
+            .catch(function (err) {
+                throw new Error(`sberbank Error ${url.href}: ${err}`)
+            })
+    }
+    /**
+     * полный журнал посдеднюю
+     */
+    fullList() {
+        let url = new URL("http://localhost:3000/");
+        url.searchParams.append("operation", 7)
+        return fetch(url)
+            .then(response => response.json())
+            .then(result => {
+                console.log("sberbank call result", result)
+                if (result.status != "success") {
+                    throw new Error(result.error.message);
+                }
+                else {
+                    this.cheq = result.cheq;
+                }
+            })
+            .catch(function (err) {
+                throw new Error(`sberbank Error ${url.href}: ${err}`)
+            })
+    }
+    /**
+     * полный журнал посдеднюю
+     */
+    shortList() {
+        let url = new URL("http://localhost:3000/");
+        url.searchParams.append("operation", 8)
+        return fetch(url)
+            .then(response => response.json())
+            .then(result => {
+                console.log("sberbank call result", result)
+                if (result.status != "success") {
+                    throw new Error(result.error.message);
+                }
+                else {
+                    this.cheq = result.cheq;
+                }
+            })
+            .catch(function (err) {
+                throw new Error(`sberbank Error ${url.href}: ${err}`)
+            })
+    }
+    /**
+     * сверка итогов
+     */
+    compare() {
+        let url = new URL("http://localhost:3000/");
+        url.searchParams.append("operation", 10)
+        return fetch(url)
+            .then(response => response.json())
+            .then(result => {
+                console.log("sberbank call result", result)
+                if (result.status != "success") {
+                    throw new Error(result.error.message);
+                }
+                else {
+                    this.cheq = result.cheq;
+                }
+            })
+            .catch(function (err) {
+                throw new Error(`sberbank Error ${url.href}: ${err}`)
+            })
+    }
+
     payToSberbank() {
         let url = new URL("http://localhost:3000/");
         url.searchParams.append("operation", 1)
@@ -76,8 +161,8 @@ export default class App {
                 if (result.status != "success") {
                     throw new Error(result.error.message);
                 }
-                else{
-                    this.cheq= result.cheq
+                else {
+                    this.cheq = result.cheq
                 }
             })
             .catch(function (err) {

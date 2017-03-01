@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
-import 'muse-ui/dist/theme-dark.css' // use dark theme
+// import 'muse-ui/dist/theme-dark.css' // use dark theme
 
 import AppView from './components/AppView.vue'
 import App from './App'

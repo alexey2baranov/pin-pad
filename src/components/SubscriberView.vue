@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <h2 title="ФИО (номер договора)">{{model.fullName}} ({{model.contrNumber}})</h2>
-        <div class="accounts">
-            <div v-for="eachAccount in model.accounts" class="account-block">
+    <mu-card>
+        <mu-card-title :title="model.fullName" :subTitle="'Договор № '+model.contrNumber"></mu-card-title>
+        <mu-card-text class="accounts">
+            <div v-for="eachAccount in model.accounts" class="mb-5">
                 <h3>
                     <input :id="eachAccount.id" type="radio" name="account" :value="eachAccount.number" @change="accountNumberChange(eachAccount)">
                     <label :for="eachAccount.id" title="Текущий остаток на счете - абонентская плата = остаток на счете после списания абонентской платы">{{eachAccount.number}} ({{floor(eachAccount.saldo)}} - {{getTotalCost(eachAccount)}} = {{getMinimumPayment(eachAccount)}} руб) </label>
@@ -16,8 +16,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </mu-card-text>
+    </mu-card>
 </template>
 
 <script>

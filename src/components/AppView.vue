@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" class="container">
         <div id="error" v-if="unhandledRejection">
             Ошибка <br>
             {{unhandledRejection.reason.message}}<br>
@@ -12,38 +12,56 @@
 
         <form @submit.prevent="1">
             <mu-tabs :value="operation" @change="operation_change">
-                <mu-tab value="pay" title="Oplta"/>
-                <mu-tab value="tab2" title="TAB TWO"/>
-                <mu-tab value="tab3" title="TAB ACTIVE"/>
+                <mu-tab value="pay" title="Оплата"/>
+                <mu-tab value="cancel" title="Отмена последней операции"/>
+                <mu-tab value="fullList" title="Полный журнал"/>
+                <mu-tab value="shortList" title="Краткий журнал"/>
+                <mu-tab value="compare" title="Сверка итогов"/>
             </mu-tabs>
             <div v-show="operation === 'pay'">
-                <mu-auto-complete id="search2" labelFloat label="Номер договора или ФИО (Esc)" fullWidth
-                                  :dataSource="autocomplete_dataSource" filter="noFilter" @select="autocomplete_select"/>
+                <mu-auto-complete id="search" labelFloat label="Номер договора или ФИО (Esc)" fullWidth
+                                  :dataSource="autocomplete_dataSource" filter="noFilter"
+                                  @select="autocomplete_select"/>
 
                 <subscriber-view v-if="model.subscriber" v-bind:model="model.subscriber"
                                  @accountNumberChange="subscriberView_accountNumberChange"></subscriber-view>
 
                 <template v-if="model.subscriber">
-                    <input type="number" id="sum" min="0" placeholder="Сумма оплаты" v-model.number="model.sum">
-                    <input type="submit" id="pay" :disabled="!(model.account && model.sum && model.sberbankServerStatus)"
-                           value="Оплатить (Enter)"
-                           @click="model.pay.bind(model)()">
-                    <div id="sberbankServerStatusMessage" v-if="!model.sberbankServerStatus">Платежный сервис ПАО "Сбербанк"
-                        недоступен
+                    <div class="d-flex mt-5  align-items-stretch">
+                        <mu-text-field class="" type="number" label="Сумма платежа" labelFloat fullWidth :min="0"
+                                       v-model.number="model.sum"/>
+                    </div>
+                    <mu-raised-button primary class="" type="submit"
+                                      label="Оплатить"
+                                      :disabled="!(model.account && model.sum && model.sberbankServerStatus)"
+                                      value="Оплатить (Enter)"
+                                      @click="model.pay.bind(model)()"/>
+                    <div id="sberbankServerStatusMessage" v-if="!model.sberbankServerStatus">Платежный сервис ПАО
+                        "Сбербанк" недоступен
                     </div>
                 </template>
-                <mu-paper v-if="model.cheq" class="cheq" :zDepth="2" >{{model.cheq}}</mu-paper>
             </div>
-            <div v-if="operation === 'tab2'">
-                <h2>Tab Two</h2>
+            <div v-if="operation === 'cancel'" class="d-flex mt-5">
+                <mu-raised-button primary class="mx-auto" label="Отмена последней операции" @click="cancel_click"/>
             </div>
-            <div v-if="operation === 'tab3'">
-                <h2>Tab Three</h2>
+            <div v-if="operation === 'fullList'" class="d-flex mt-5">
+                <mu-raised-button primary class="mx-auto" label="Показать полный журнал"
+                                  @click="fullList_click"></mu-raised-button>
             </div>
-
+            <div v-if="operation === 'shortList'" class="d-flex mt-5">
+                <mu-raised-button primary class="mx-auto" label="Показать краткий журнал"
+                                  @click="shortList_click"></mu-raised-button>
+            </div>
+            <div v-if="operation === 'compare'" class="d-flex mt-5">
+                <mu-raised-button primary class="mx-auto" label="Сверка итогов"
+                                  @click="compare_click"></mu-raised-button>
+            </div>
+            <div class="d-flex mt-5">
+                <mu-paper v-if="model.cheq" class="cheq" :zDepth="2">{{model.cheq}}</mu-paper>
+            </div>
             <pre>
                 operation {{operation}}
-                    <!--{{ model.account}}-->
+                <!--{{ model.account}}-->
                 <!--{{model.subscriber}}-->
                     </pre>
         </form>
@@ -80,15 +98,35 @@
         },
         computed: {},
         methods: {
+            esc_click(){
+                alert(123)
+            },
+            async fullList_click(){
+                this.model.fullList()
+            },
+
+            async shortList_click(){
+                this.model.shortList()
+            },
+
+            async compare_click(){
+                this.model.compare()
+            },
+
+            async cancel_click(){
+                if (confirm("Отменить последнюю операцию?")) {
+                    this.model.cancel()
+                }
+            },
             handleTabChange(x){
-                this.activeTab= x
-                alert("change"+x)
+                this.activeTab = x
+                alert("change" + x)
             },
             handleActive(y){
                 alert("active")
             },
             async operation_change(cur){
-                this.operation= cur
+                this.operation = cur
             },
             /**
              * Ищет клиентов удовлетворяющих поиску
@@ -127,6 +165,7 @@
             autocomplete_select(item, index) {
                 this.model.getSubscriber(item.value)
                     .then(subscriber => {
+                        this.model.cheq = null
                         this.model.subscriber = subscriber;
                     })
                     .catch(err => {
@@ -146,7 +185,12 @@
             });
         },
         mounted() {
-            Rx.Observable.fromEvent(document.querySelector("#search2 input"), "input")
+            window.addEventListener("keyup", function(e){
+                if (e.keyCode==27){
+                  $("#search input").focus()
+                }
+            })
+            Rx.Observable.fromEvent(document.querySelector("#search input"), "input")
                 .do(() => {
                     this.$data.autocomplete_dataSource = []
                 })
@@ -161,36 +205,36 @@
 </script>
 
 <style>
-    * {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-size: 20px;
-    }
+    /*    * {
+            font-family: 'Avenir', Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 20px;
+        }*/
 
-    #search {
-        width: 20em;
+    /*    #search {
+            width: 20em;
 
-        display: block;
-        font-size: 1.5em;
-    }
+            display: block;
+            font-size: 1.5em;
+        }*/
 
-    #search2 input {
-        font-size: 1.5em;
-    }
+    /*    #search2 input {
+            font-size: 1.5em;
+        }*/
 
-    #sum {
-        width: 10em;
+    /*
+        #sum {
+            width: 10em;
 
-        font-size: 1.5em;
-        margin-top: 2em;
-    }
+            font-size: 1.5em;
+            margin-top: 2em;
+        }
 
-    #pay {
-        font-size: 1.5em;
-        /*background-color: green;*/
-        /*color: white;*/
-    }
+        #pay {
+            font-size: 1.5em;
+        }
+    */
 
     #error {
         background-color: darkred;
@@ -201,6 +245,12 @@
     #sberbankServerStatusMessage {
         background-color: darkred;
         color: white;
+        margin: 1em 0;
     }
 
+    .cheq {
+        white-space: pre;
+        margin: 3em;
+        padding: 1em;
+    }
 </style>
